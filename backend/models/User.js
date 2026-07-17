@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ROLES = require("../config/roles");
 
 const userSchema = new mongoose.Schema({
     emailAddress: {type: String, required: true, unique: true},
