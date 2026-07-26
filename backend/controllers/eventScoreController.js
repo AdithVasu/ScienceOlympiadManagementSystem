@@ -142,6 +142,52 @@ const getPendingEventScores = async (req, res) => {
     }
 };
 
+// Get all APPROVED event scores where the user is either the primary student OR a partner
+const getApprovedUserEventScores = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const scores = await EventScore.find({
+            status: "Approved",
+            $or: [
+                { student: userId },
+                { partners: userId }
+            ]
+        }).populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
+
+        return res.status(200).json(scores);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+// Get all PENDING event scores where the user is either the primary student OR a partner
+const getPendingUserEventScores = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const scores = await EventScore.find({
+            status: "Pending",
+            $or: [
+                { student: userId },
+                { partners: userId }
+            ]
+        }).populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
+
+        return res.status(200).json(scores);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 // 6. Update EventScore (Submitter only)
 const updateEventScore = async (req, res) => {
     try {
@@ -227,6 +273,8 @@ module.exports = {
     invalidateEventScore, 
     getEventScoresByEvent,
     getPendingEventScores,
+    getApprovedUserEventScores, 
+    getApprovedUserEventScores,
     updateEventScore,
     deleteEventScore
 };
