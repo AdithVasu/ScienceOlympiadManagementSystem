@@ -8,19 +8,19 @@ const handleLogin = async (req, res) => {
         const {emailAddress, password} = req.body;
 
         if (!emailAddress || !password) {
-            return res.status(200).json({error: "Missing email or password"});
+            return res.status(400).json({error: "Missing email or password"});
         }
 
-        const user = await User.find({
+        const user = await User.findOne({
             emailAddress
         });
 
         if (!user) {
-            res.status(401).json({error: "No account found with information provided"});
+            return res.status(401).json({error: "No account found with information provided"});
         }
 
-        const validPassword = bcrypt.compare(password, user.password);
-        if (!isMatch) {
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
             return res.status(401).json({ error: "Invalid password" });
         }
 
@@ -46,7 +46,7 @@ const handleLogin = async (req, res) => {
         return res.status(200).json({ accessToken, role: user.role });
         
     } catch(err) {
-        res.status(500).json({error: err.message});
+        return res.status(500).json({error: err.message});
     } 
 
 
