@@ -2,13 +2,6 @@ const EventScore = require("../models/EventScore");
 const Event = require("../models/Event");
 const User = require("../models/User");
 
-// Populate helper for consistent response formats
-const populateConfig = [
-    { path: "student", select: "firstName lastName emailAddress" },
-    { path: "partners", select: "firstName lastName emailAddress" },
-    { path: "event", select: "name description date timeBlock" }
-];
-
 // 1. Create a new EventScore
 const createUserEvent = async (req, res) => {
     try {
@@ -43,7 +36,11 @@ const createUserEvent = async (req, res) => {
             partners
         });
 
-        await newEventScore.populate(populateConfig);
+        await newEventScore.populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
 
         return res.status(201).json({
             message: "Event score submitted successfully.",
@@ -68,7 +65,12 @@ const validateEventScore = async (req, res) => {
 
         eventScore.status = "Approved";
         await eventScore.save();
-        await eventScore.populate(populateConfig);
+
+        await eventScore.populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
 
         return res.status(200).json({
             message: "Successfully Validated",
@@ -112,7 +114,11 @@ const getEventScoresByEvent = async (req, res) => {
             return res.status(404).json({ error: "No Event Found" });
         }
 
-        const eventScores = await EventScore.find({ event: eventId, status: "Approved" }).populate(populateConfig);
+        const eventScores = await EventScore.find({ event: eventId, status: "Approved" }).populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
 
         return res.status(200).json(eventScores);
         
@@ -124,7 +130,11 @@ const getEventScoresByEvent = async (req, res) => {
 // 5. Get All Pending EventScores for Admins/Volunteers
 const getPendingEventScores = async (req, res) => {
     try {
-        const pendingScores = await EventScore.find({ status: "Pending" }).populate(populateConfig);
+        const pendingScores = await EventScore.find({ status: "Pending" }).populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
 
         return res.status(200).json(pendingScores);
     } catch (err) {
@@ -168,7 +178,12 @@ const updateEventScore = async (req, res) => {
         eventScore.status = "Pending";
 
         await eventScore.save();
-        await eventScore.populate(populateConfig);
+
+        await eventScore.populate([
+            { path: "student", select: "firstName lastName emailAddress" },
+            { path: "partners", select: "firstName lastName emailAddress" },
+            { path: "event", select: "name description date timeBlock" }
+        ]);
 
         return res.status(200).json({
             message: "Event score updated successfully. Re-submitted for review.",
@@ -180,7 +195,7 @@ const updateEventScore = async (req, res) => {
     }
 };
 
-// 7. Delete EventScore (Manual user deletion)
+// 7. Delete EventScore (Manual user/admin deletion)
 const deleteEventScore = async (req, res) => {
     try {
         const { eventScoreId } = req.params;
