@@ -1,5 +1,6 @@
 const VolunteerHours = require("../models/VolunteerHours");
 const User = require("../models/User");
+const ROLES = require("../config/roles");
 
 const createVolunteerHour = async (req, res) => {
     try {
@@ -233,7 +234,7 @@ const deleteVolunteerHours = async (req, res) => {
         }
 
         // Authorization check: Owner or Admin
-        if (volunteerHour.volunteer.toString() !== currentUserId && req.user.role !== "Admin") {
+        if (volunteerHour.volunteer.toString() !== currentUserId && req.user.role !== ROLES.Admin) {
             return res.status(403).json({ error: "Unauthorized to delete this record." });
         }
 

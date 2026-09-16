@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
@@ -6,8 +6,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_ACCOUNT,
+        pass: process.env.EMAIL_APP_PASS,
     },
 });
 
@@ -34,7 +34,7 @@ const requestPasswordReset = async (req, res) => {
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
         const mailOptions = {
-            from: `"Science Olympiad Platform" <${process.env.EMAIL_USER}>`,
+            from: `"Science Olympiad Platform" <${process.env.EMAIL_ACCOUNT}>`,
             to: user.emailAddress,
             subject: "Science Olympiad - Password Reset Request",
             html: `

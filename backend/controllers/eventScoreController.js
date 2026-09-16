@@ -1,6 +1,7 @@
 const EventScore = require("../models/EventScore");
 const Event = require("../models/Event");
 const User = require("../models/User");
+const ROLES = require("../config/roles");
 
 // 1. Create a new EventScore
 const createUserEvent = async (req, res) => {
@@ -254,7 +255,7 @@ const deleteEventScore = async (req, res) => {
         }
 
         // Authorization check: Submitter or Admin
-        if (eventScore.student.toString() !== studentId && req.user.role !== "Admin") {
+        if (eventScore.student.toString() !== studentId && req.user.role !== ROLES.Admin) {
             return res.status(403).json({ error: "Unauthorized to delete this score card." });
         }
 
@@ -267,14 +268,14 @@ const deleteEventScore = async (req, res) => {
     }
 };
 
-module.exports = { 
-    createUserEvent, 
-    validateEventScore, 
-    invalidateEventScore, 
+module.exports = {
+    createUserEvent,
+    validateEventScore,
+    invalidateEventScore,
     getEventScoresByEvent,
     getPendingEventScores,
-    getApprovedUserEventScores, 
     getApprovedUserEventScores,
+    getPendingUserEventScores,
     updateEventScore,
     deleteEventScore
 };
